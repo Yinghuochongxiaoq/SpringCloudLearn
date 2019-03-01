@@ -9,6 +9,7 @@
         <module name="config-client" />
         <module name="config-server" />
         <module name="eureka-server" />
+        <module name="sentinel-demo" />
         <module name="serice-feign" />
         <module name="server-hi" />
         <module name="service-ribbon" />
