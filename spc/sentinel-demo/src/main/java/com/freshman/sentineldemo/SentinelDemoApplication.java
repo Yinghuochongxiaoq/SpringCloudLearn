@@ -31,7 +31,7 @@ public class SentinelDemoApplication {
     /**
      * 热点限流的资源名
      */
-    private static String resourceName = "freqParam";
+    public static final String resourceName = "freqParam";
 
     public static void main(String[] args) {
         SpringApplication.run(SentinelDemoApplication.class, args);
@@ -51,13 +51,13 @@ public class SentinelDemoApplication {
         ParamFlowRule rule_hot = new ParamFlowRule(resourceName)
                 .setParamIdx(0)
                 .setGrade(RuleConstant.FLOW_GRADE_QPS)
-                .setCount(3);
+                .setCount(20);
 
         //针对int类型的参数456，单独设置限流QPS阈值位10，而不是全局的阈值3
         ParamFlowItem item = new ParamFlowItem().setObject(String.valueOf(456))
                 //参数类型一定要匹配
                 .setClassType(int.class.getName())
-                .setCount(10);
+                .setCount(2);
         rule_hot.setParamFlowItemList(Collections.singletonList(item));
         ParamFlowRuleManager.loadRules(Collections.singletonList(rule_hot));
 
@@ -116,15 +116,23 @@ public class SentinelDemoApplication {
     }
 
 
-    // 原本的业务方法.
+    /**
+     * 原本的业务方法
+     */
     @GetMapping("/freqParamFlow_r")
-    @SentinelResource(blockHandler = "blockHandlerForGetUser")
-    public String getUserById(String id) {
+    @SentinelResource(value = resourceName,entryType = EntryType.IN, blockHandler = "blockHandlerForGetUser")
+    public String getUserById(@RequestParam("uid") int uid, @RequestParam("ip") Long ip) {
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(dateFormat.format(date) + "pass");
         return "getUserById command ok";
     }
 
     // blockHandler 函数，原方法调用被限流/降级/系统保护的时候调用
-    public String blockHandlerForGetUser(String id, BlockException ex) {
+    public String blockHandlerForGetUser(int id,Long ip, BlockException ex) {
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(dateFormat.format(date) + "block");
         return "getUserById command failed";
     }
 

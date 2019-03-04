@@ -33,3 +33,5 @@ packages/
 /spc/.idea/*
 /spc/config-client/.mvn/*
 /spc/.idea/*
+/.idea/*
+/spc/.idea/*
